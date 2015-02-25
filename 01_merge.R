@@ -28,6 +28,10 @@ nutrition=addAlias("Green Tomatillo Salsa", "Tomatillo-Green Chili Salsa")
 nutrition=addAlias("Fajita Veggies", "Fajita Vegetables")
 nutrition=addAlias("Soft Flour Tortilla", "Burrito")
 nutrition=addAlias("Fajita Veggies", "Veggie")
+nutrition=addAlias("Steak", "Adobo-Marinated and Grilled Steak")
+nutrition=addAlias("Barbacoa", "Braised Barbacoa")
+nutrition=addAlias("Carnitas", "Braised Carnitas")
+nutrition=addAlias("Chicken", "Adobo-Marinated and Grilled Chicken")
 
 #Need nutrition for canned sodas and Izze and Nantucket Nectar & 6 Pack Soft Drink
 #Izze = Clementine, Grapefruit, Blackberry
@@ -100,5 +104,5 @@ for (i in 1:nrow(orders_nut)){
   orders_nut[i,6:19]=tots(i)
   orders_nut[i,20:33]=tots2(i)
 }
-#write.csv(data.frame(lapply(orders_nut, as.character), stringsAsFactors=FALSE), file="chipotle_nutrition.csv")
+write.csv(data.frame(lapply(orders_nut, as.character), stringsAsFactors=FALSE), file="out/chipotle_nutrition.csv")
 #Since choice_description is a list, need to cast as character first
