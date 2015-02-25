@@ -48,7 +48,7 @@ gmPal <- colorRampPalette(c('green','magenta')) #green = lo-cal, magenta = hi-ca
 full_meals$CalColors <- gmPal(50)[as.numeric(cut(full_meals$Calories,breaks = 100))]
 
 png("out/3dCalBreakdown.png")
-scatterplot3d( full_meals$proteinByCal, full_meals$fatByCal,full_meals$carbByCal, color=full_meals$CalColors, angle = 20, cex.symbols = 0.25, xlab="% Cal from Protein", ylab="% Cal from Fat", zlab = "% Cal from Carb")
+scatterplot3d(full_meals$proteinByCal, full_meals$fatByCal,full_meals$carbByCal, color=full_meals$CalColors, angle = 20, cex.symbols = 0.25, xlab="% Cal from Protein", ylab="% Cal from Fat", zlab = "% Cal from Carb", sub="green = lo-cal; magenta=hi-cal")
 dev.off()
 
 png("out/ProteinVsFat.png")
