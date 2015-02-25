@@ -39,64 +39,87 @@ full_meals = filter(meals, !grepl("Chips", item_name))
 
 
 #Start making plots
+png("out/CalorieHist.png")
 hist(full_meals$Calories)
+dev.off()
 
 #plot percent of calories that come from fat, protein, carbs
 gmPal <- colorRampPalette(c('green','magenta')) #green = lo-cal, magenta = hi-cal
 full_meals$CalColors <- gmPal(50)[as.numeric(cut(full_meals$Calories,breaks = 100))]
+
+png("out/3dCalBreakdown.png")
 scatterplot3d( full_meals$proteinByCal, full_meals$fatByCal,full_meals$carbByCal, color=full_meals$CalColors, angle = 20, cex.symbols = 0.25, xlab="% Cal from Protein", ylab="% Cal from Fat", zlab = "% Cal from Carb")
+dev.off()
+
+png("out/ProteinVsFat.png")
 plot(full_meals$proteinByCal, full_meals$fatByCal, col=full_meals$CalColors, cex= 0.25, xlab="% Cal from Protein", ylab="% Cal from Fat", main="Chipotle Meals", sub="green = lo-cal; magenta=hi-cal")
+dev.off()
+
+png("out/CarbVsFat.png")
 plot(full_meals$carbByCal, full_meals$fatByCal, col=full_meals$CalColors, cex= 0.25, xlab="% Cal from Carb", ylab="% Cal from Fat", main="Chipotle Meals", sub="green = lo-cal; magenta=hi-cal")
+dev.off()
+
+png("out/ProteinVsProtein.png")
 plot(full_meals$carbByCal, full_meals$proteinByCal, col=full_meals$CalColors, cex= 0.25, xlab="% Cal from Carb", ylab="% Cal from Protein", main="Chipotle Meals", sub="green = lo-cal; magenta=hi-cal")
+dev.off()
 
 #Plot Calorie per dollar
 numPrice = as.numeric(sub("\\$","",full_meals$item_price))
 calPerDollar = (full_meals$Calories * full_meals$quantity)/numPrice
+
+png("out/CalperDollar.png")
 hist(calPerDollar)
+dev.off()
 
 #Plot calories vs. nutrients, breakdown by main
 rng=c(0,1.5)
 
 palette(c("Orange","Grey","Brown", "Blue", "Green"))
 
+png("out/CalVsProtein.png")
 plot(full_meals$"Calories Share", full_meals$"Protein.g. Share",
      xlim=rng, ylim=rng, xlab = "%DV Calories", ylab="%DV Protein", 
      main = "Chipotle Meal Protein / Calorie Density", col=full_meals$Main)
 abline(a = 0, b=1)
 legend('topright', legend = levels(full_meals$Main), col = 1:5, cex = 0.8, pch = 1)
+dev.off()
 
-
-
+png("out/CalVsFiber.png")
 plot(full_meals$"Calories Share", full_meals$"DietaryFiber.g. Share",
      xlim=rng, ylim=rng, xlab = "%DV Calories", ylab="%DV Fiber", 
      main = "Chipotle Meal Fiber / Calorie Density", col=full_meals$Main)
 abline(a = 0, b=1)
 legend('topright', legend = levels(full_meals$Main), col = 1:5, cex = 0.8, pch = 1)
+dev.off()
 
-
+png("out/CalVsVitA.png")
 plot(full_meals$"Calories Share", full_meals$"VitaminA..DV. Share",
      xlim=rng, ylim=rng, xlab = "%DV Calories", ylab="%DV Vitamin A", 
      main = "Chipotle Meal Vitamin A / Calorie Density", col=full_meals$Main)
 abline(a = 0, b=1)
 legend('topright', legend = levels(full_meals$Main), col = 1:5, cex = 0.8, pch = 1)
+dev.off()
 
-
+png("out/CalVsVitC.png")
 plot(full_meals$"Calories Share", full_meals$"VitaminC..DV. Share",
      xlim=rng, ylim=rng, xlab = "%DV Calories", ylab="%DV Vitamin C", 
      main = "Chipotle Meal Vitamin C / Calorie Density", col=full_meals$Main)
 abline(a = 0, b=1)
 legend('topright', legend = levels(full_meals$Main), col = 1:5, cex = 0.8, pch = 1)
+dev.off()
 
-
+png("out/CalVsIron.png")
 plot(full_meals$"Calories Share", full_meals$"Iron..DV. Share",
      xlim=rng, ylim=rng, xlab = "%DV Calories", ylab="%DV Iron", 
      main = "Chipotle Meal Iron / Calorie Density", col=full_meals$Main)
 abline(a = 0, b=1)
 legend('topright', legend = levels(full_meals$Main), col = 1:5, cex = 0.8, pch = 1)
+dev.off()
 
-
+png("out/CalVsCalcium.png")
 plot(full_meals$"Calories Share", full_meals$"Calcium...DV. Share",
      xlim=rng, ylim=rng, xlab = "%DV Calories", ylab="%DV Calcium", 
      main = "Chipotle Meal Calcium / Calorie Density", col=full_meals$Main)
 abline(a = 0, b=1)
 legend('topright', legend = levels(full_meals$Main), col = 1:5, cex = 0.8, pch = 1)
+dev.off()
