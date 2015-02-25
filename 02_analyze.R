@@ -123,3 +123,7 @@ plot(full_meals$"Calories Share", full_meals$"Calcium...DV. Share",
 abline(a = 0, b=1)
 legend('topright', legend = levels(full_meals$Main), col = 1:5, cex = 0.8, pch = 1)
 dev.off()
+
+png("out/SugarShare.png")
+hist(full_meals$"Sugar.g. Share")
+dev.off()
