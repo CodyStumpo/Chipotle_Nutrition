@@ -1,0 +1,93 @@
+---
+title: "Chipotle Meals are Nutrient Dense"
+author: "Cody Stumpo"
+date: "February 28, 2015"
+output: html_document
+---
+The NY Times got ahold of some detailed Chipotle order data and '[analyzed](http://www.nytimes.com/interactive/2015/02/17/upshot/what-do-people-actually-order-at-chipotle.html?abt=0002&abg=1&_r=0)' it.  They concluded the meal has a lot of calories, sodium, and saturated fat.
+Calories you need, obviously.  If you need about 2000 of them a day and once in a while you eat a big meal, that meal might be 1000 or even 1200 calories.  Unless you eat a real breakfast, Mega-Chipotle for lunch and Mega-Chipotle again for dinner, and then go back and do it all again the next day, you're not creating any caloric problems for yourself.  So stop feeling bad about that.  The question is really whether you're making good use of the calories you're getting.  Two things scientists used to think were possibly bad for you were sodium and saturated fat.  But they don't necessarily agree on that any more.  The only things well and truly bad for you by unanimous consent are trans fats and sugar.  Chipotle has almost none of these in any of its foods.  Ironically, the least healthy meal there now is the salad, since the dressing has a little sugar (not much).
+
+I didn't add chips or sodas to meals, just analyzed meals (Burritos, Tacos, Bowls, Salads). The data is great because it has the full details of every component in the meal (e.g. a steak burrito with white rice, pinto beans, hot salsa, and guacamole). And Chipotle gives us [quite a bit of info](http://www.chipotle.com/en-US/menu/nutrition_calculator/nutrition_calculator.aspx) about each component. Let's take a look first at meals through the food-shaming lens of the NY Times. 
+
+
+```{r, echo=FALSE}
+setwd("/Users/cstumpo/Box Sync/cms/RProjects/Chipotle_Nutrition")
+load("out/full_meals.rda")
+hist(full_meals$Calories)
+hist(full_meals$Sugar.g.)
+```
+
+Chipotle sells nothing with any Trans Fat at all, so there's no chart to show.  Guidelines on sugar say to keep it under 90g a day, so even if you get the salad dressing or (very slightly) sugary salsa, you're not contributing to any significant accumulation of sugar.
+
+So what are you getting for your 850 +/- 200 calories?  Well, first off let's analyze the percent of calories that come from fat vs. protein vs. carbs.  There's no universal right mix here.  It kind of depends on your goals.
+
+```{r, echo = FALSE}
+gmPal <- colorRampPalette(c('green','magenta')) #green = lo-cal, magenta = hi-cal
+full_meals$CalColors <- gmPal(50)[as.numeric(cut(full_meals$Calories,breaks = 100))]
+
+plot(full_meals$proteinByCal, full_meals$fatByCal, col=full_meals$CalColors, cex= 0.25, xlab="% Cal from Protein", ylab="% Cal from Fat", main="Chipotle Meals", sub="green = lo-cal; magenta=hi-cal")
+
+plot(full_meals$carbByCal, full_meals$fatByCal, col=full_meals$CalColors, cex= 0.25, xlab="% Cal from Carb", ylab="% Cal from Fat", main="Chipotle Meals", sub="green = lo-cal; magenta=hi-cal")
+
+plot(full_meals$carbByCal, full_meals$proteinByCal, col=full_meals$CalColors, cex= 0.25, xlab="% Cal from Carb", ylab="% Cal from Protein", main="Chipotle Meals", sub="green = lo-cal; magenta=hi-cal")
+
+
+```
+
+More or less, you're going to get 30% of the calories from protein and then can trade off fat for protein in the rest.  You'll see a little cluster of 15% protein calorie meals. That's some vegetarian meals (the low-calorie ones) and some with lots of sides (the hi-calorie ones).
+
+What about all the explicitly good stuff in the meal?  How nutrient dense are typical chipotle meals?  Suppose you really do aim to eat 2000 calories and 800 are coming at Chipotle (~40%).  Are you going to get 40% of your daily recommended value of Vitamin A, Vitmain C, Iron, Calcium, and Fiber?  Generally the answer is yes.  You are getting nutrient-dense food.
+
+```{r, echo=FALSE}
+rng=c(0,1.5)
+
+palette(c("Orange","Grey","Brown", "Blue", "Green"))
+
+
+plot(full_meals$"Calories Share", full_meals$"Protein.g. Share",
+     xlim=rng, ylim=rng, xlab = "%DV Calories", ylab="%DV Protein", 
+     main = "Chipotle Meal Protein / Calorie Density", col=full_meals$Main)
+abline(a = 0, b=1)
+legend('topright', legend = levels(full_meals$Main), col = 1:5, cex = 0.8, pch = 1)
+
+
+
+plot(full_meals$"Calories Share", full_meals$"DietaryFiber.g. Share",
+     xlim=rng, ylim=rng, xlab = "%DV Calories", ylab="%DV Fiber", 
+     main = "Chipotle Meal Fiber / Calorie Density", col=full_meals$Main)
+abline(a = 0, b=1)
+legend('topright', legend = levels(full_meals$Main), col = 1:5, cex = 0.8, pch = 1)
+
+
+
+plot(full_meals$"Calories Share", full_meals$"VitaminA..DV. Share",
+     xlim=rng, ylim=rng, xlab = "%DV Calories", ylab="%DV Vitamin A", 
+     main = "Chipotle Meal Vitamin A / Calorie Density", col=full_meals$Main)
+abline(a = 0, b=1)
+legend('topright', legend = levels(full_meals$Main), col = 1:5, cex = 0.8, pch = 1)
+
+
+
+plot(full_meals$"Calories Share", full_meals$"VitaminC..DV. Share",
+     xlim=rng, ylim=rng, xlab = "%DV Calories", ylab="%DV Vitamin C", 
+     main = "Chipotle Meal Vitamin C / Calorie Density", col=full_meals$Main)
+abline(a = 0, b=1)
+legend('topright', legend = levels(full_meals$Main), col = 1:5, cex = 0.8, pch = 1)
+
+
+
+plot(full_meals$"Calories Share", full_meals$"Iron..DV. Share",
+     xlim=rng, ylim=rng, xlab = "%DV Calories", ylab="%DV Iron", 
+     main = "Chipotle Meal Iron / Calorie Density", col=full_meals$Main)
+abline(a = 0, b=1)
+legend('topright', legend = levels(full_meals$Main), col = 1:5, cex = 0.8, pch = 1)
+
+
+plot(full_meals$"Calories Share", full_meals$"Calcium...DV. Share",
+     xlim=rng, ylim=rng, xlab = "%DV Calories", ylab="%DV Calcium", 
+     main = "Chipotle Meal Calcium / Calorie Density", col=full_meals$Main)
+abline(a = 0, b=1)
+legend('topright', legend = levels(full_meals$Main), col = 1:5, cex = 0.8, pch = 1)
+```
+
+Finally, you are getting your money's worth.  The meal costs $10 but it is half of everything you need for the day.

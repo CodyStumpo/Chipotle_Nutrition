@@ -1,13 +1,18 @@
 library(scatterplot3d)
 
-getMain = function(i){strsplit(full_meals$item_name[i]," ")[[1]][1]}
-getWrap = function(i){words=strsplit(full_meals$item_name[i]," ")[[1]]
-                      if (length(words) >1) out=words[2] else out=words[1]
-                      out}
+
+orders_nut$fatByCal <- (orders_nut$TotalFat.g. * 9) / orders_nut$Calories
+orders_nut$proteinByCal <- (orders_nut$Protein.g. * 4) / orders_nut$Calories
+orders_nut$carbByCal <- (orders_nut$Carbohydrates.g. * 4) / orders_nut$Calories
 
 meals = filter(orders_nut, Calories > 0)
 full_meals = filter(meals, !grepl("Chips", item_name))
 
+
+getMain = function(i){strsplit(full_meals$item_name[i]," ")[[1]][1]}
+getWrap = function(i){words=strsplit(full_meals$item_name[i]," ")[[1]]
+                      if (length(words) >1) out=words[2] else out=words[1]
+                      out}
 
 full_meals$Main = full_meals$item_name
 full_meals$Wrap = full_meals$item_name
@@ -34,12 +39,9 @@ full_meals$Main=as.factor(full_meals$Main)
 full_meals$Wrap=as.factor(full_meals$Wrap)
 
 
-orders_nut$fatByCal <- (orders_nut$TotalFat.g. * 9) / orders_nut$Calories
-orders_nut$proteinByCal <- (orders_nut$Protein.g. * 4) / orders_nut$Calories
-orders_nut$carbByCal <- (orders_nut$Carbohydrates.g. * 4) / orders_nut$Calories
 
 
-
+save(full_meals,file = "out/full_meals.rda")
 
 #Start making plots
 
