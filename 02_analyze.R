@@ -38,18 +38,19 @@ full_meals$Main[881]="Chicken"
 full_meals$Main=as.factor(full_meals$Main)
 full_meals$Wrap=as.factor(full_meals$Wrap)
 
-
-
-
+#save stuff out for R Markdown to load
 save(full_meals,file = "out/full_meals.rda")
+
 
 #Start making plots
 
-savePLOTS = FALSE
+savePLOTS = TRUE
 
 if (savePLOTS == TRUE) png("out/CalorieHist.png")
 hist(full_meals$Calories)
 if (savePLOTS == TRUE) dev.off()
+
+par(pty="s") #make plots square
 
 #plot percent of calories that come from fat, protein, carbs
 gmPal <- colorRampPalette(c('green','magenta')) #green = lo-cal, magenta = hi-cal
@@ -67,9 +68,14 @@ if (savePLOTS == TRUE) png("out/CarbVsFat.png")
 plot(full_meals$carbByCal, full_meals$fatByCal, col=full_meals$CalColors, cex= 0.25, xlab="% Cal from Carb", ylab="% Cal from Fat", main="Chipotle Meals", sub="green = lo-cal; magenta=hi-cal")
 if (savePLOTS == TRUE) dev.off()
 
-if (savePLOTS == TRUE) png("out/ProteinVsProtein.png")
+if (savePLOTS == TRUE) png("out/CarbVsProtein.png")
 plot(full_meals$carbByCal, full_meals$proteinByCal, col=full_meals$CalColors, cex= 0.25, xlab="% Cal from Carb", ylab="% Cal from Protein", main="Chipotle Meals", sub="green = lo-cal; magenta=hi-cal")
 if (savePLOTS == TRUE) dev.off()
+
+#try something like
+rng=c(0,0.8)
+pairs(~fatByCal+proteinByCal+carbByCal, data = full_meals, col=full_meals$CalColors, 
+      cex= 0.1, xlim=rng, ylim=rng, main="Chipotle Meals", sub="green = lo-cal; magenta=hi-cal")
 
 #Plot Calorie per dollar
 numPrice = as.numeric(sub("\\$","",full_meals$item_price))
@@ -132,6 +138,56 @@ abline(a = 0, b=1)
 legend('topright', legend = levels(full_meals$Main), col = 1:5, cex = 0.8, pch = 1)
 if (savePLOTS == TRUE) dev.off()
 
+
+par(pty="m")#don't need square plots anymore
 if (savePLOTS == TRUE) png("out/SugarShare.png")
 hist(full_meals$"Sugar.g. Share")
 if (savePLOTS == TRUE) dev.off()
+
+#how nutrient rich is each ingredient?  (%DV of nutrient compared to %DV of Cal)
+nut_rich = nutrition2 
+nut_rich[3:16] = nut_rich[3:16]/nutrition2$Calories
+colnames(nut_rich)=lapply(1:ncol(nut_rich), function(i) {strsplit(colnames(nut_rich)[i],split = "\\.")[[1]][1]})
+nut_rich$TransFat <- NULL
+rownames(nut_rich) <- nut_rich$Name
+#save stuff out for R Markdown to load
+save(nut_rich,file = "out/nut_rich.rda")
+
+
+#want to do like radar plots of this.
+library(fmsb)
+#par(mar=c(1, 1, 1, 1))
+#layout(matrix(1:2, ncol=2))
+lapply(1:24, function(i){
+  dat=nut_rich[i,4:15]
+  datC=min(ceiling(max(dat)),20)
+  radarchart(rbind(rep(datC,12), rep(0,12), dat), seg=datC, title = nut_rich$Name[i])
+})
+
+meats=nut_rich[c(4,5,2,1,37),]
+radarchart(rbind(rep(4,12), rep(0,12), meats[, 4:15]), seg=4, title="Meats")
+legend('topright', legend = meats$Name[1:5], col = 1:5, cex = 0.8, pch = 1)
+
+ricenbeans=nut_rich[c(7,8,9,10),]
+radarchart(rbind(rep(4,12), rep(0,12), ricenbeans[, 4:15]), seg=4, title="Rice & Beans")
+legend('topright', legend = ricenbeans$Name[1:4], col = 1:4, cex = 0.8, pch = 1)
+
+tortillas=nut_rich[c(6,20,21,22,23),]
+radarchart(rbind(rep(4,12), rep(0,12), tortillas[, 4:15]), seg=4, title="Tortillas")
+legend('topright', legend = tortillas$Name[1:5], col = 1:5, cex = 0.8, pch = 1)
+
+fats=nut_rich[c(16,17,18,24),]
+radarchart(rbind(rep(4,12), rep(0,12), fats[, 4:15]), seg=4, title="Fats")
+legend('topright', legend = fats$Name[1:4], col = 1:4, cex = 0.8, pch = 1)
+
+salsas=nut_rich[c(12,13,14,15),]
+radarchart(rbind(rep(4,12), rep(0,12), salsas[, 4:15]), seg=4, title="Salsas")
+legend('topright', legend = salsas$Name[1:4], col = 1:4, cex = 0.8, pch = 1)
+
+#maybe make veggies.  Bring in veggies here + lettuce
+veg=nut_rich[c(11,12,13,14,15,19),]
+radarchart(rbind(rep(4,12), rep(0,12), veg[, 4:15]), seg=4, title="Vegetables")
+legend('topright', legend = veg$Name[1:6], col = 1:6, cex = 0.8, pch = 1)
+#move legend out of the way & expand palette
+
+#how about print 24 one by 1, but size them according to calories?  Lettuce would disappear.

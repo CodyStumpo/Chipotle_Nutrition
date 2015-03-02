@@ -1,9 +1,11 @@
 ---
 title: "Chipotle Meals are Nutrient Dense"
-author: "Cody Stumpo"
+author: "[Cody Stumpo](https://github.com/CodyStumpo/)"
 date: "February 28, 2015"
 output: html_document
 ---
+## Full Meals
+
 The NY Times got ahold of some detailed Chipotle order data and '[analyzed](http://www.nytimes.com/interactive/2015/02/17/upshot/what-do-people-actually-order-at-chipotle.html?abt=0002&abg=1&_r=0)' it.  They concluded the meal has a lot of calories, sodium, and saturated fat.
 Calories you need, obviously.  If you need about 2000 of them a day and once in a while you eat a big meal, that meal might be 1000 or even 1200 calories.  Unless you eat a real breakfast, Mega-Chipotle for lunch and Mega-Chipotle again for dinner, and then go back and do it all again the next day, you're not creating any caloric problems for yourself.  So stop feeling bad about that.  The question is really whether you're making good use of the calories you're getting.  Two things scientists used to think were possibly bad for you were sodium and saturated fat.  But they don't necessarily agree on that any more.  The only things well and truly bad for you by unanimous consent are trans fats and sugar.  Chipotle has almost none of these in any of its foods.  Ironically, the least healthy meal there now is the salad, since the dressing has a little sugar (not much).
 
@@ -19,17 +21,17 @@ hist(full_meals$Sugar.g.)
 
 Chipotle sells nothing with any Trans Fat at all, so there's no chart to show.  Guidelines on sugar say to keep it under 90g a day, so even if you get the salad dressing or (very slightly) sugary salsa, you're not contributing to any significant accumulation of sugar.
 
-So what are you getting for your 850 +/- 200 calories?  Well, first off let's analyze the percent of calories that come from fat vs. protein vs. carbs.  There's no universal right mix here.  It kind of depends on your goals.
+So what are you getting for your 850 +/- 200 calories?  Well, first off let's analyze the percent of calories that come from fat vs. protein vs. carbs.  There's no universal right mix here.  It kind of depends on your goals. In the plots below, I also color the points to reflect how many calories the meal has overal.  Bright Green is lowest calories.  Bright Magenta is highest calories. It's a continuous scale between those two extremes.
 
 ```{r, echo = FALSE}
 gmPal <- colorRampPalette(c('green','magenta')) #green = lo-cal, magenta = hi-cal
 full_meals$CalColors <- gmPal(50)[as.numeric(cut(full_meals$Calories,breaks = 100))]
 
-plot(full_meals$proteinByCal, full_meals$fatByCal, col=full_meals$CalColors, cex= 0.25, xlab="% Cal from Protein", ylab="% Cal from Fat", main="Chipotle Meals", sub="green = lo-cal; magenta=hi-cal")
+#par(pty="s") #make plots square
+rng=c(0,0.8)
 
-plot(full_meals$carbByCal, full_meals$fatByCal, col=full_meals$CalColors, cex= 0.25, xlab="% Cal from Carb", ylab="% Cal from Fat", main="Chipotle Meals", sub="green = lo-cal; magenta=hi-cal")
-
-plot(full_meals$carbByCal, full_meals$proteinByCal, col=full_meals$CalColors, cex= 0.25, xlab="% Cal from Carb", ylab="% Cal from Protein", main="Chipotle Meals", sub="green = lo-cal; magenta=hi-cal")
+pairs(~fatByCal+proteinByCal+carbByCal, data = full_meals, col=full_meals$CalColors, 
+      cex= 0.1, xlim=rng, ylim=rng, main="Chipotle Meals", sub="green = lo-cal; magenta=hi-cal")
 
 
 ```
@@ -38,11 +40,13 @@ More or less, you're going to get 30% of the calories from protein and then can 
 
 What about all the explicitly good stuff in the meal?  How nutrient dense are typical chipotle meals?  Suppose you really do aim to eat 2000 calories and 800 are coming at Chipotle (~40%).  Are you going to get 40% of your daily recommended value of Vitamin A, Vitmain C, Iron, Calcium, and Fiber?  Generally the answer is yes.  You are getting nutrient-dense food.
 
+The diagonal line in each plot below represents a 1:1 ratio of % Daily Values of the nutrient to % Daily Value of Calories.  Each point is a meal.  A meal above the line is nutrient dense for that nutrient.  A meal far below the line has 'empty calories' as far as that nutrient is concerned.  Most people are putting together nutrient-dense meals.
+
+
 ```{r, echo=FALSE}
 rng=c(0,1.5)
-
+par(pty="s") #make plots square
 palette(c("Orange","Grey","Brown", "Blue", "Green"))
-
 
 plot(full_meals$"Calories Share", full_meals$"Protein.g. Share",
      xlim=rng, ylim=rng, xlab = "%DV Calories", ylab="%DV Protein", 
@@ -91,3 +95,87 @@ legend('topright', legend = levels(full_meals$Main), col = 1:5, cex = 0.8, pch =
 ```
 
 Finally, you are getting your money's worth.  The meal costs $10 but it is half of everything you need for the day.
+
+## Individual Meal Components
+It's also interesting to look at how each individual meal component you can order contributes to nutrition.  On the 12 dimensions of nutrition information Chipotle provides (accepting trans fats as zero across the board, remember), how much bang for your calorie buck do you get in each?  That is to say, for component i, 
+ %DV_NutritionDimension[i] /  %DV_Calories[i].
+ 
+ So for example, take Pinto Beans. Each ring of the spiderweb away from the innermost is an additional 1x on denseness.  The zeroth line is 0x, first line is 1x, the second line is 2x,... in terms of % of DV provided compared to % of DV Calories provided.  The actual Vitamins & Minerals pretty much the more the better.  The rest, don't take it too harmfully if something has 2x density for sodium or fat or something 'bad.' The DV in those cases are intended to be more like limits than minimums, but recent science is not backing up the idea that they need to be limited. For ease of reading, I cut off the axes at 400%.  Beyond that, you can just think of how dense the subject of the plot is in that nutrition element as 'very.' 
+ 
+```{r, echo=FALSE, warning=FALSE}
+load("out/nut_rich.rda")
+library(fmsb)
+
+i=10 #Pinto Beans
+dat=nut_rich[i,4:15]
+radarchart(rbind(rep(4,12), rep(0,12), dat), seg=4, title = nut_rich$Name[i])
+```
+
+Pinto Beans, per calorie, are an excellent source of Iron, Vitamin C, Protein, and Fiber.  But more interesting maybe is to compare that against some like options.
+
+### Comparisons of options in each class
+
+#### Beans
+
+```{r, echo=FALSE, warning=FALSE}
+palette(c("Black", "Brown"))
+beans=nut_rich[c(9,10),]
+radarchart(rbind(rep(4,12), rep(0,12), beans[, 4:15]), seg=4, title="Beans")
+legend('topright', legend = beans$Name[1:2], col = 1:2, cex = 0.8, pch = 1)
+```
+
+They're very similar.  Pinto Beans have some Vitamin C that the Black Beans don't.
+
+#### Rices
+
+We could do the same for rices and see they too are quite similar to each other, but the white rice has some extra Vitamin A and Iron while the Brown rice offers more Fiber.
+
+```{r, echo=FALSE, warning=FALSE}
+palette(c("Green", "Brown"))
+rices=nut_rich[c(7,8),]
+radarchart(rbind(rep(4,12), rep(0,12), rices[, 4:15]), seg=4, title="Rices")
+legend('topright', legend = rices$Name[1:2], col = 1:2, cex = 0.8, pch = 1)
+```
+
+#### Meats
+
+All the Meats are of course excellent sources of Protein, with the Beefs also providing good Iron density.  
+
+```{r, echo=FALSE, warning=FALSE}
+palette(c("Orange","Grey","Brown", "Blue"))
+meats=nut_rich[c(4,5,2,1),]
+radarchart(rbind(rep(4,12), rep(0,12), meats[, 4:15]), seg=4, title="Meats")
+legend('topright', legend = meats$Name[1:4], col = 1:4, cex = 0.8, pch = 1)
+```
+
+#### Fats
+
+The Fatty sides are where you can add a lot of fat and calories (and flavor!) to your meal, if you're looking to do that.  They halfway hold their own in terms of the other nutritional elements.
+
+```{r, echo=FALSE, warning=FALSE}
+palette(c("Beige","Yellow","Green", "Orange"))
+fats=nut_rich[c(16,17,18,24),]
+radarchart(rbind(rep(4,12), rep(0,12), fats[, 4:15]), seg=4, title="Fats")
+legend('topright', legend = fats$Name[1:4], col = 1:4, cex = 0.8, pch = 1)
+```
+
+#### Tortillas
+
+Tortillas make a nice mouth feel to the whole meal, but limited nutrition for the calories.  The flour is a bit more nutritious than the corn.
+
+```{r, echo=FALSE, warning=FALSE}
+palette(c("Black","Yellow","Green", "Orange", "Blue"))
+tortillas=nut_rich[c(6,20,21,22,23),]
+radarchart(rbind(rep(4,12), rep(0,12), tortillas[, 4:15]), seg=4, title="Tortillas")
+legend('topright', legend = tortillas$Name[1:5], col = 1:5, cex = 0.8, pch = 1)
+```
+
+#### Veggies
+Vegetables are good for you.  You may have heard this before. They break these graphs, they are so nutrient-dense.  A lettuce serving is 5 calories (0.25% of your DV), and it has 35% of your DV for Vitamin A. That's a density of 140x.
+
+```{r, echo=FALSE, warning=FALSE}
+palette(c("Orange","Red","Yellow", "Green", "Brown", "Purple"))
+veg=nut_rich[c(11,12,13,14,15,19),]
+radarchart(rbind(rep(4,12), rep(0,12), veg[, 4:15]), seg=4, title="Vegetables")
+legend('topright', legend = veg$Name[1:6], col = 1:6, cex = 0.8, pch = 1)
+```
