@@ -104,5 +104,5 @@ for (i in 1:nrow(orders_nut)){
   orders_nut[i,6:19]=tots(i)
   orders_nut[i,20:33]=tots2(i)
 }
-write.csv(data.frame(lapply(orders_nut, as.character), stringsAsFactors=FALSE), file="out/chipotle_nutrition.csv")
+#write.csv(data.frame(lapply(orders_nut, as.character), stringsAsFactors=FALSE), file="out/chipotle_nutrition.csv")
 #Since choice_description is a list, need to cast as character first

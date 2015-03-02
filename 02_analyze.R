@@ -44,7 +44,7 @@ save(full_meals,file = "out/full_meals.rda")
 
 #Start making plots
 
-savePLOTS = TRUE
+savePLOTS = FALSE
 
 if (savePLOTS == TRUE) png("out/CalorieHist.png")
 hist(full_meals$Calories)
