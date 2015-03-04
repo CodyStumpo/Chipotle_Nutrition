@@ -179,3 +179,74 @@ veg=nut_rich[c(11,12,13,14,15,19),]
 radarchart(rbind(rep(4,12), rep(0,12), veg[, 4:15]), seg=4, title="Vegetables")
 legend('topright', legend = veg$Name[1:6], col = 1:6, cex = 0.8, pch = 1)
 ```
+
+## Example Meals
+With the introdicution of Sofritas, you can order something like [a million different meals](http://www.businessinsider.com/how-many-combinations-can-you-order-at-chipotle-2013-7) at Chipotle. When I go to Chipotle, I usually gravitate to one of a half-dozen meals, that between them use most of the possible ingredients.  Let's take some and put them through this analysis.  
+
+
+### Steak Soft Tacos
+If I don't want a big meal, I might put together something like street tacos.  For me that's
+"Steak", "Lettuce", "Guacamole", "Red Tomatillo Salsa", "Tomato Salsa", "Soft Corn Tortillas."  That has **680 Calories, split 39% from Fat, 39% from Carbs, 22% from Protein**.  It has OK nutrition except for a shortage of Calcium.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+load("out/nutrition.rda")
+load("out/nutrition2.rda")
+
+
+mySteakTacos = c("Steak", "Lettuce", "Guacamole", "Red Tomatillo Salsa", "Tomato Salsa", "Soft Corn Tortillas")
+
+
+library(dplyr)
+myTots2=function(meal){
+  ings.nut=filter(nutrition2, Name %in% meal)
+  colSums(ings.nut[c(3:5,7:16)])
+}
+
+
+x = myTots2(mySteakTacos)
+radarchart (data.frame(rbind(rep(4,12), rep(0,12), x[2:13]/x[1])), seg=4, title="Steak Tacos")
+
+```
+
+
+### Chicken Salad
+Another meal I like is a Chicken Salad:  "Chicken", "Lettuce", "Vinaigrette", "Black Beans", "Corn Salsa", "Cheese."
+
+That has **755 Calories, split 47% from Fat, 29% from Carbs, 24% from Protein**.  It is actually less nutritious per calorie than the Tacos, as the salad dressing offers nothing (but flavor) and Chicken doesn't offer as much Iron.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+myChickenSalad = c("Chicken", "Lettuce", "Vinaigrette", "Black Beans", "Corn Salsa", "Cheese")
+x = myTots2(myChickenSalad)
+radarchart (data.frame(rbind(rep(4,12), rep(0,12), x[2:13]/x[1])), seg=4, title= "Chicken Salad")
+
+```
+
+
+### Sofritas Bowl
+Sometimes, I am just tagging along with some group, not raelly in the mood for Chipotle. That's when I might put together a Sofritas Bowl: "Sofritas", "Brown Rice", "Pinto Beans", "Sour Cream", "Corn Salsa", "Green Tomatillo Salsa."
+That has **675 Calories, split 38% from Fat, 48% from Carbs, and 13% from Protein**.  It's also across the board nutritious.  While offering less Protein than most Chipotle meals, it still carries it's weight in terms of getting to my daily value.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+mySofritasBowl = c("Sofritas", "Brown Rice", "Pinto Beans", "Sour Cream", "Corn Salsa", "Green Tomatillo Salsa")
+x = myTots2(mySofritasBowl)
+radarchart (data.frame(rbind(rep(4,12), rep(0,12), x[2:13]/x[1])), seg=4, title= "Sofritas Bowl")
+
+```
+
+
+### Carnitas Burrito
+Finally, I do sometimes go in whole hog and just get a Carnitas Burrito:
+"Carnitas", "Pinto Beans", "White Rice", "Guacamole", "Green Tomatillo Salsa","Soft Flour Tortilla"
+ "Sofritas", "Brown Rice", "Pinto Beans", "Sour Cream", "Corn Salsa", "Green Tomatillo Salsa."
+That has **1070 Calories, split 42% from Fat, 42% from Carbs, and 17% from Protein**.  This meal isn't quite worth it, from a nutrition per Calorie point of view, but I only get this once in a blue moon.
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+myCarnitasBurrito = c("Carnitas", "Pinto Beans", "White Rice", "Guacamole", "Green Tomatillo Salsa","Soft Flour Tortilla")
+x = myTots2(myCarnitasBurrito)
+radarchart (data.frame(rbind(rep(4,12), rep(0,12), x[2:13]/x[1])), seg=4, title= "Carnitas Burrito")
+
+```
